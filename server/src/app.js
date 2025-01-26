@@ -1,14 +1,22 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}));
 
 app.use(express.json());
 
 // Import routes
 import healthCheckRoutes from "./routes/healthcheck.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 // Use routes
 app.use("/api/v1/healthcheck", healthCheckRoutes);
+app.use("/api/v1/users", userRoutes);
 
 
 // Test route
