@@ -59,4 +59,120 @@ const userSignup = async (req, res) => {
 
 }
 
-export { userSignup };
+const loginBody = zod.object({
+    username: zod.string().nonempty("Username is required"),  
+    password: zod.string().nonempty("Password is required")
+    });
+
+const userLogin = async(req,res) => {
+    const {username,password} = req.body;
+
+    const validateLogin = loginBody.safeParse(req.body);
+
+    if(!validateLogin.success){
+        return res
+        .status(400)
+        .json({
+            message : "Validation failed",
+            errors : validateLogin.error.errors
+        })
+    }
+
+    const userExists = await user.findOne({username});
+
+    if(!userExists){
+        return res.status(404).json({message:"User not found"});
+    }
+
+    const passwordMatch = await userExists.comparePassword(password);
+
+    if(!passwordMatch){
+        return res.status(400).json({message:"Invalid username or password"})
+
+    }
+    
+    const token = jwt.sign({
+        userId : userExists._id
+    },process.env.JWT_SECRET);
+
+    return res
+    .status(200)
+    .json({message:"User logged in successfully",token})
+}
+
+const updateBody = zod.object({
+    password : zod.string().optional(),
+    fullname : zod.string().optional(),
+    username : zod.string().optional()
+})
+
+const updateUserDetails = async(req,res) => {
+    const {password,fullname,username} = req. body;
+
+    const validateUpdateBody = updateBody.safeParse(req.body);
+
+
+
+    if(!validateUpdateBody.success){
+        return res
+        .status(400)
+        .json({message:"Validation failed",errors:validateUpdateBody.error.errors})
+    }
+
+    console.log(req.userId); 
+
+    try {
+        await user.updateOne({
+            
+            _id : req.userdId,
+    
+        },req.body)
+    
+        return res
+        .status(200).json({message:"User details updated successfully"})
+    } catch (error) {
+        console.log("Error updating user:", error);
+        
+    }
+}
+
+
+const getUsers = async(req,res) => {
+    const filter = req.query.filter || ""
+
+    const users = await user.find({
+        $or : [
+            {
+                fullname : { $regex : filter }
+            },
+            {
+                 username : {$regex : filter}
+            }
+        ]
+    })
+
+    if(!users){
+        return res
+        .status(400)
+        .json({
+            message : "No users found"
+        })
+    }
+
+    res
+    .status(200)
+    .json({
+        user : users.map(user => ({
+            username : user.username,
+            fullname : user.fullname,
+            _id : user._id
+        }))
+    })
+
+}
+    
+
+export { userSignup,
+     userLogin,
+     updateUserDetails,
+    getUsers }
