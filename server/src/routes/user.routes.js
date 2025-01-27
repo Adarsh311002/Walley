@@ -9,4 +9,5 @@ router.route("/login").post(userLogin)
 router.route("/updateDetails").post(auth, updateUserDetails)
 router.route("/u/:username").get(getUsers)
 
+
 export default router;

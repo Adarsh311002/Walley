@@ -2,6 +2,7 @@ import { user } from "../models/user.models.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import zod from "zod";
+import { Account } from "../models/account.models.js";
 
 
 const userSchema = zod.object({
@@ -37,6 +38,17 @@ const userSignup = async (req, res) => {
             email,
             password
         });
+
+        const userId = Newuser._id
+
+        const Balance = 1 + Math.random() * 10000;
+
+        await Account.create({
+            userId,
+            Balance
+        })
+
+        console.log(`Account created for User ID: ${userId} with Balance: ${Balance.toFixed(2)}`);
 
         const token = jwt.sign({
             userId : Newuser._id
@@ -124,7 +136,7 @@ const updateUserDetails = async(req,res) => {
     try {
         await user.updateOne({
             
-            _id : req.userdId,
+            _id : req.userId,
     
         },req.body)
     
@@ -137,39 +149,47 @@ const updateUserDetails = async(req,res) => {
 }
 
 
-const getUsers = async(req,res) => {
-    const filter = req.query.filter || ""
+const getUsers = async (req, res) => {
+    try {
+        const filter = req.query.filter || req.params.username || "";
 
-    const users = await user.find({
-        $or : [
-            {
-                fullname : { $regex : filter }
-            },
-            {
-                 username : {$regex : filter}
+        
+        const users = await user.find({
+            $or: [
+                { fullname: { $regex: filter, $options: 'i' } },
+                { username: { $regex: filter, $options: 'i' } }
+            ]
+        }).select('username fullname _id');
+
+        
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No users found",
+                data: []
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                users: users.map(user => ({
+                    username: user.username,
+                    fullname: user.fullname,
+                    _id: user._id
+                }))
             }
-        ]
-    })
+        });
 
-    if(!users){
-        return res
-        .status(400)
-        .json({
-            message : "No users found"
-        })
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching users",
+            error: error.message
+        });
     }
-
-    res
-    .status(200)
-    .json({
-        user : users.map(user => ({
-            username : user.username,
-            fullname : user.fullname,
-            _id : user._id
-        }))
-    })
-
-}
+};
     
 
 export { userSignup,

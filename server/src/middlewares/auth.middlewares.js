@@ -1,42 +1,28 @@
 
+
 import jwt from "jsonwebtoken"
 
 
-const auth = async (req,res,next) => {
-    const authHeader = req.headers.authorization;
 
-    if(!authHeader || !authHeader.startsWith('Bearer ')){
-         return res.status(401).json({
-                             message : "Authorization Header Not Found."    
-         });
+
+const auth = async (req, res, next) => {
+    const token = req.headers.authorization?.replace("Bearer ", "") || req.header("Authorization")?.replace("Bearer ", "");
+    console.log("Extracted Token:", token); // Debug token
+
+    if (!token) {
+        return res.status(400).json({ message: "Unauthorized - No token provided" });
     }
-
-    
 
     try {
-        const token = authHeader.split(' ')[1];
-
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
-
-        console.log('Authorization Header:', authHeader);
-        console.log('Extracted Token:', token);
-        
-        console.log(req.userId)
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded Token:", decodedToken); // Debug decoded token
         req.userId = decodedToken.userId;
-        
-        next()
-
+        next();
     } catch (error) {
-        return res
-        .status(400)
-        .json({
-            message : "Invalid Token.",
-            error : error
-
-        })
+        console.error("JWT Verification Error:", error.message); // Log the error
+        return res.status(401).json({ message: "Unauthorized - Invalid token" });
     }
+};
 
-
-}
 
 export {auth}
