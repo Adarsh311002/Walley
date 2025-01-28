@@ -1,7 +1,7 @@
 
 
 import { useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 import { Wallet, Search, User, LogOut } from "lucide-react";
 
 // Mock data for demonstration
@@ -9,7 +9,7 @@ const currentUser = {
   name: "John Doe",
   email: "john@example.com",
   balance: 1000.0,
-  avatar: "https://github.com/shadcn.png", 
+  avatar: "https://github.com/shadcn.png", // example avatar URL
 };
 
 const users = [
@@ -21,12 +21,22 @@ const users = [
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [amount, setAmount] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleSendMoney = () => {
+    if (selectedUser && amount) {
+      alert(`Sending $${amount} to ${selectedUser.name}`);
+      setIsDialogOpen(false);
+      setAmount("");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 via-teal-400 to-green-400">
@@ -45,7 +55,7 @@ export default function Dashboard() {
                 className="h-8 w-8 rounded-full"
               />
             </button>
-       
+          
           </div>
         </div>
       </nav>
@@ -93,22 +103,58 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Send Money Button */}
-          <button
-            className={`w-full px-4 py-2 text-white text-sm font-medium rounded-md ${
-              selectedUser
-                ? "bg-blue-600 hover:bg-blue-700 focus:outline-none"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-            disabled={!selectedUser}
-            onClick={() => {
-              if (selectedUser) {
-                alert(`Sending money to ${selectedUser.name}`);
-              }
-            }}
-          >
-            Send Money
-          </button>
+          {/* Send Money Button and Dialog */}
+          <div className="w-full mt-4">
+            <button
+              className={`w-full px-4 py-2 text-white text-sm font-medium rounded-md ${
+                selectedUser
+                  ? "bg-blue-600 hover:bg-blue-700 focus:outline-none"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+              disabled={!selectedUser}
+              onClick={() => setIsDialogOpen(true)}
+            >
+              Send Money
+            </button>
+
+            {isDialogOpen && (
+              <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+                <div className="bg-white p-6 rounded-lg w-[400px]">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Send Money to {selectedUser?.name}
+                  </h2>
+                  <p className="text-sm mb-4">Enter the amount you want to send.</p>
+                  <div className="mb-4">
+                    <label htmlFor="amount" className="block text-sm mb-2">
+                      Amount
+                    </label>
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      id="amount"
+                      placeholder="Enter amount"
+                      className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      className="px-4 py-2 bg-gray-300 text-sm rounded-md"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md"
+                      onClick={handleSendMoney}
+                    >
+                      Initiate Transaction
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
