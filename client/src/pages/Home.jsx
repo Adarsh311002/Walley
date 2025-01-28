@@ -33,8 +33,8 @@ const Home = () => {
           <div className="flex justify-center space-x-6">
           <a
   href="https://github.com/Adarsh311002"
-  target="_blank" // Opens the link in a new tab
-  rel="noopener noreferrer" // Improves security when opening external links
+  target="_blank" 
+  rel="noopener noreferrer" 
   className="text-white hover:text-blue-100"
 >
   <Github className="h-8 w-8" />

@@ -13,9 +13,10 @@ const Navbar = () => {
       <Link href="#" className="text-sm font-medium text-white hover:text-blue-600">
         Contact
       </Link>
+      <Link to="/signin">
       <button className="px-4 py-2 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
        SignIn
-</button>
+</button></Link>
     </nav>
   </header>
   )
