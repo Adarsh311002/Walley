@@ -55,6 +55,18 @@ export default function Dashboard() {
                 className="h-8 w-8 rounded-full"
               />
             </button>
+            <div className="absolute right-0 mt-0 w-48 rounded-md bg-white shadow-lg">
+              <div className="p-2">
+                <p className="font-medium text-gray-800">{currentUser.name}</p>
+                <button className="w-full flex items-center gap-2 p-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </button>
+                
+              </div>
+              
+              
+                </div>
           
           </div>
         </div>

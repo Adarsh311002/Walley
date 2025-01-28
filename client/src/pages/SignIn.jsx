@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Wallet } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [userName,setUserName] = useState("");
+  const [password,setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -29,18 +34,19 @@ const SignIn = () => {
         <h1 className="text-2xl font-semibold text-center mb-6">Sign in to your account</h1>
         
         {/* Sign In Form */}
-        <form onSubmit={onSubmit}>
+        <div onSubmit={onSubmit}>
           <div className="space-y-4">
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+              <label  className="block text-sm font-medium text-gray-700">
+                username
               </label>
               <input
-                id="email"
-                type="email"
-                placeholder="john@example.com"
+                id="username"
+                
+                placeholder="john31"
                 required
+                onChange={(e) => setUserName(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -55,6 +61,7 @@ const SignIn = () => {
                 type="password"
                 placeholder="••••••••"
                 required
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -62,6 +69,15 @@ const SignIn = () => {
             {/* Sign In Button */}
             <button
               type="submit"
+              onClick={async () => {
+                const response = await axios.post("http://localhost:5001/api/v1/users/login",{
+                    username : userName,
+                    password : password
+                })
+                localStorage.setItem("token",response.data.token)
+                navigate("/dashboard")
+
+              }}
               disabled={isLoading}
               className={`w-full rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium shadow-md transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
@@ -70,7 +86,7 @@ const SignIn = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
           </div>
-        </form>
+        </div>
 
         {/* Footer */}
         <p className="text-center mt-6 text-sm text-gray-600">

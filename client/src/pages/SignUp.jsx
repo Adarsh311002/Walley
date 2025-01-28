@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { Wallet } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const SignUp = () => {
-  const [isLoading, setIsLoading] = useState(false);
+ 
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("Account created successfully!");
-    }, 2000);
-  };
+  const navigate = useNavigate();
+
+  
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-500 via-teal-400 to-green-400">
@@ -28,7 +28,7 @@ const SignUp = () => {
         <h1 className="text-2xl font-semibold text-center mb-6">
           Create your account
         </h1>
-        <form onSubmit={onSubmit}>
+        <div >
           <div className="space-y-4">
             {/* Full Name Field */}
             <div className="space-y-2">
@@ -39,6 +39,21 @@ const SignUp = () => {
                 id="name"
                 placeholder="John Doe"
                 required
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/*username */}
+            <div className="space-y-2">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                username
+              </label>
+              <input
+                id="username"
+                placeholder="john@example.com"
+                required
+                onChange={(e) => setUserName(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -50,9 +65,9 @@ const SignUp = () => {
               </label>
               <input
                 id="email"
-                type="email"
                 placeholder="john@example.com"
                 required
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -67,6 +82,7 @@ const SignUp = () => {
                 type="password"
                 placeholder="••••••••"
                 required
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -74,15 +90,26 @@ const SignUp = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
-              className={`w-full rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium shadow-md transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              onClick={async () => {
+                const response = await axios.post("http://localhost:5001/api/v1/users/signup",{
+                    username : userName,
+                    email : email,
+                    password : password,
+                    fullname : fullName
+
+
+                });
+                localStorage.setItem("token",response.data.token)
+                navigate("/dashboard")
+              }}
+             
+              className={`w-full rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium shadow-md transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                `}
             >
-              {isLoading ? "Signing up..." : "Sign Up"}
+               Sign Up
             </button>
           </div>
-        </form>
+        </div>
         <p className="text-center mt-6 text-sm text-gray-600">
           Already have an account?{" "}
           <Link to="/signin" className="text-blue-600 hover:underline">
