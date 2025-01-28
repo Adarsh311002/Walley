@@ -1,4 +1,5 @@
 import {Account} from "../models/account.models.js"
+import mongoose from "mongoose";
 
 
 const getBalance = async (req, res) => {
@@ -39,5 +40,57 @@ const getBalance = async (req, res) => {
     }
 };
 
+const transferMoney = async(req,res) => {
+    const session = await mongoose.startSession();
 
-export { getBalance}
+    session.startTransaction();
+
+    const {amount,to} = req.body
+
+    const account = Account.findOne({
+        userId : req.userId
+    }).session(session)
+
+    if(!account || account.Balance < amount){
+        await session.abortTransaction();
+        return res.status(400).json({success: false, message : "Insufficient Balance"})
+    }
+
+    const  toAccount = Account.findOne({userId : to}).session(session)
+
+    if(!toAccount){
+        return res.status(404).json({message : "User not found"})
+    }
+
+    await Account.updateOne({
+        userId : req.userId
+    },
+    {
+        $inc : {
+             Balance : -amount
+        }
+    }
+).session(session)
+
+    await Account.updateOne({
+        userId : to
+    },
+{
+    $inc : {
+         Balance : amount
+    }
+}).session(session) 
+
+
+    await session.commitTransaction();
+
+    res.
+    status(200)
+    .json({
+        message : "Transfer Successful",
+    })
+
+}
+
+
+export { getBalance, transferMoney}
