@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import SignUp from "../pages/SignUp";
 import SignIn from "../pages/SignIn";
 import Dashboard from "../pages/Dashboard";
+import { SendMoney } from "../components/SendMoney";
 
 
 
@@ -24,10 +25,10 @@ const router = createBrowserRouter([
         path : "/dashboard",
         element : <Dashboard />
     },
-    // {
-    //     path : "/send",
-    //     element : <SendMoney />
-    // }
+    {
+        path : "/send-money",
+        element : <SendMoney />
+    }
 ]) 
 
 export default router;

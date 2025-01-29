@@ -151,7 +151,7 @@ const updateUserDetails = async(req,res) => {
 
 const getUsers = async (req, res) => {
     try {
-        const filter = req.query.filter || req.params.username || "";
+        const filter = req.query.filter ||  "";
 
         
         const users = await user.find({
@@ -190,9 +190,37 @@ const getUsers = async (req, res) => {
         });
     }
 };
+
+const searchUsers = async (req, res) => {
+    try {
+        const filter = req.query.filter || "";
+        
+        const users = await user.find({
+            $or: [
+                { fullname: { $regex: filter, $options: 'i' } },
+                { username: { $regex: filter, $options: 'i' } }
+            ]
+        }).select('username fullname _id');
+
+        return res.status(200).json({
+            success: true,
+            data: { users }
+        });
+
+    } catch (error) {
+        console.error("Error searching users:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error searching users",
+            error: error.message
+        });
+    }
+};
+
     
 
 export { userSignup,
      userLogin,
      updateUserDetails,
-    getUsers }
+    getUsers ,
+searchUsers}
