@@ -45,50 +45,58 @@ const transferMoney = async(req,res) => {
 
     session.startTransaction();
 
-    const {amount,to} = req.body
-
-    const account = await Account.findOne({
-        userId : req.userId
-    }).session(session)
-
-    if(!account || account.Balance < amount || amount < 0 ){
-        await session.abortTransaction();
-        return res.status(400).json({success: false, message : "Insufficient Balance"})
-    }
-
-    const  toAccount = await Account.findOne({userId : to}).session(session)
-
-    if(!toAccount){
-        return res.status(404).json({message : "User not found"})
-    }
-
-    await Account.updateOne({
-        userId : req.userId
-    },
+try {
+        const {amount,to} = req.body
+    
+        const account = await Account.findOne({
+            userId : req.userId
+        }).session(session)
+    
+        if(!account || account.Balance < amount || amount < 0 ){
+            await session.abortTransaction();
+            return res.status(400).json({success: false, message : "Insufficient Balance"})
+        }
+    
+        const  toAccount = await Account.findOne({userId : to}).session(session)
+    
+        if(!toAccount){
+            return res.status(404).json({message : "User not found"})
+        }
+    
+        await Account.updateOne({
+            userId : req.userId
+        },
+        {
+            $inc : {
+                 Balance : -amount
+            }
+        }
+    ).session(session)
+    
+        await Account.updateOne({
+            userId : to
+        },
     {
         $inc : {
-             Balance : -amount
+             Balance : amount
         }
-    }
-).session(session)
-
-    await Account.updateOne({
-        userId : to
-    },
-{
-    $inc : {
-         Balance : amount
-    }
-}).session(session) 
-
-
-    await session.commitTransaction();
-
-    res.
-    status(200)
-    .json({
-        message : "Transfer Successful",
-    })
+    }).session(session) 
+    
+    
+        await session.commitTransaction();
+    
+        res.
+        status(200)
+        .json({
+            message : "Transfer Successful",
+        })
+} catch (error) {
+    await session.abortTransaction();
+        res.status(500).json({ message: "Transfer Failed" });
+    } finally {
+        session.endSession();
+    
+}
 
 }
 
