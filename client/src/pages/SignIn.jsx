@@ -1,102 +1,160 @@
 import React, { useState } from "react";
-import { Wallet } from "lucide-react";
-import { Link , useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Wallet, Loader2, ArrowLeft } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [userName,setUserName] = useState("");
-  const [password,setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const onSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    setError("");
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    
-    setTimeout(() => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/api/v1/users/login",
+        {
+          username: formData.username,
+          password: formData.password,
+        }
+      );
+
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed", err);
+      setError(
+        err.response?.data?.message || "Invalid credentials. Please try again."
+      );
+    } finally {
       setIsLoading(false);
-      alert("Signed in successfully!");
-    }, 2000);
+    }
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-500 via-teal-400 to-green-400">
-      <div className="m-auto w-full max-w-md p-8 rounded-xl bg-white/80 backdrop-blur-md shadow-2xl">
-        {/* Logo and Title */}
-        <Link to="/">
-        <div className="flex items-center justify-center mb-8">
-          <Wallet className="h-8 w-8 text-blue-600" />
-          <span className="ml-2 text-3xl font-bold text-blue-600">Walley</span>
-        </div>
-        </Link>
-        <h1 className="text-2xl font-semibold text-center mb-6">Sign in to your account</h1>
-        
-        {/* Sign In Form */}
-        <div onSubmit={onSubmit}>
-          <div className="space-y-4">
-            {/* Email Field */}
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4 py-12 sm:px-6 lg:px-8">
+      <Link
+        to="/"
+        className="absolute top-8 left-8 flex items-center text-sm text-zinc-500 hover:text-black transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+      </Link>
+
+      <Card className="w-full max-w-md border-zinc-200 shadow-xl shadow-zinc-200/50">
+        <CardHeader className="space-y-1 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="bg-black text-white p-2 rounded-xl">
+              <Wallet className="w-6 h-6" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Welcome back
+          </CardTitle>
+          <CardDescription>
+            Enter your credentials to access your wallet
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {error && (
+              <Alert
+                variant="destructive"
+                className="bg-red-50 text-red-600 border-red-200 py-2"
+              >
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
-              <label  className="block text-sm font-medium text-gray-700">
-                username
-              </label>
-              <input
+              <Label htmlFor="username">Username</Label>
+              <Input
                 id="username"
-                
-                placeholder="john31"
+                placeholder="Ex: johndoe"
                 required
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData.username}
+                onChange={handleChange}
+                className="h-11"
               />
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  to="#"
+                  className="text-sm font-medium text-zinc-500 hover:text-black hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 required
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData.password}
+                onChange={handleChange}
+                className="h-11"
               />
             </div>
 
-            {/* Sign In Button */}
-            <button
-            
+            <Button
               type="submit"
-              onClick={async () => {
-                const response = await axios.post("http://localhost:5001/api/v1/users/login",{
-                    username : userName,
-                    password : password
-                })
-                localStorage.setItem("token",response.data.token)
-                navigate("/dashboard")
-
-              }}
+              className="w-full h-11 bg-black hover:bg-zinc-800"
               disabled={isLoading}
-              className={`w-full rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium shadow-md transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
-            </button>
-          </div>
-        </div>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing
+                  in...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+        </CardContent>
 
-        {/* Footer */}
-        <p className="text-center mt-6 text-sm text-gray-600">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+        <CardFooter className="flex justify-center border-t border-zinc-100 pt-6">
+          <p className="text-sm text-zinc-500">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold text-black hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
