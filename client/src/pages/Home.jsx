@@ -29,7 +29,6 @@ import {
 const Home = () => {
   return (
     <div className="min-h-screen bg-white text-zinc-950 font-sans selection:bg-black selection:text-white">
-      {/* 1. STICKY NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div
@@ -158,7 +157,7 @@ const Home = () => {
                           AS
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Adarsh Singh</p>
+                          <p className="font-medium text-sm">Adarsh Tiwary</p>
                           <p className="text-xs text-zinc-400">Transfer</p>
                         </div>
                       </div>
