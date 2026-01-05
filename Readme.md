@@ -2,6 +2,11 @@
 
 PayCore is a modern, full-stack fintech application that allows users to send and receive money instantly. It is designed with a minimalist **Swiss Design** philosophy, real-time payment integration, and bank-grade security practices.
 
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://paycore-bay.vercel.app)
+[![Deployed on Render](https://img.shields.io/badge/Backend_on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://paycore.onrender.com)
+
+> **[ Click here to try the Live Demo](https://paycore-bay.vercel.app)**
+
 ---
 
 ## ✨ Features
