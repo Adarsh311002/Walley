@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { globalLimiter, authLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
@@ -9,19 +10,18 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(globalLimiter);
 
-// Import routes
 import healthCheckRoutes from "./routes/healthcheck.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import accountRoutes from "./routes/account.routes.js"
+import paymentRoute from "./routes/payment.routes.js"
 
-// Use routes
 app.use("/api/v1/healthcheck", healthCheckRoutes);
-app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/users",authLimiter, userRoutes);
 app.use("/api/v1/account",accountRoutes);
+app.use("/api/v1/payment", paymentRoute);
 
-
-// Test route
 app.get("/test", (req, res) => {
     res.send("Test route is working");
   });
