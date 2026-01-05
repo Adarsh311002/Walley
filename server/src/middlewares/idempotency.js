@@ -1,4 +1,4 @@
-import { IdempotencyKey } from "../models/idempotency.models";
+import { IdempotencyKey } from "../models/idempotency.models.js";
 
 export const idempotency = async(req,res,next) => {
     const key = req.headers['idempotency-key'];
