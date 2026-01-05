@@ -1,113 +1,210 @@
+# 💳 PayCore
 
-# Walley
+PayCore is a modern, full-stack fintech application that allows users to send and receive money instantly. It is designed with a minimalist **Swiss Design** philosophy, real-time payment integration, and bank-grade security practices.
 
-Walley is a fullstack money transfering app based on CRUD operation and follows the ACID propety.
+---
 
+## ✨ Featuresa
 
-## API Reference
+* **Add Funds (Razorpay)**: Securely add funds using Razorpay (Cards, NetBanking, UPI – test mode)
+* **P2P Transfers**: Instantly send money to other users using name or username
+* **ACID Transactions**: MongoDB sessions ensure atomic money transfers (no partial failures)
+* **Idempotent APIs**:  Prevents duplicate or double-spend transactions during retries or network failures.
+* **Transaction History**: Ledger-style history with incoming/outgoing transactions
+* **Optimized User Search**: Debounced search to reduce DB load
+* **Secure Authentication**: JWT-based auth with Zod validation & Bcrypt hashing
+* **API Rate Limiting**: Implemented Express middleware–based rate limiting to prevent brute-force attacks and ensure service availability
+* **Modern UI**: Tailwind CSS + ShadCN/UI
+* **Smart Notifications**: Real-time toast alerts using `sonner`
 
-#### To timely check the Server Status
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technologies                                              |
+| ------------ | --------------------------------------------------------- |
+| **Client**   | React + Vite, TailwindCSS, ShadCN/UI, Axios, Lucide Icons |
+| **Server**   | Node.js, Express.js, Razorpay SDK                         |
+| **Database** | MongoDB (Mongoose ORM)                                    |
+| **Security** | JWT, Bcrypt, Zod, HMAC Verification, Idempotency Keys, CORS, API Rate Limiting (Express  Middleware)                                                                |
+
+---
+
+## 🧩 API Modules Overview
+
+This project exposes REST APIs grouped into **User & Auth**, **Accounts**, and **Payments (Razorpay)**.
+
+---
+
+## 👤 User & Auth APIs
+
+| Method | Endpoint               | Description                            |
+| ------ | ---------------------- | -------------------------------------- |
+| POST   | `/api/v1/users/signup` | Register a new user                    |
+| POST   | `/api/v1/users/login`  | Login and receive JWT                  |
+| GET    | `/api/v1/users/bulk`   | Search users (supports `?filter=name`) |
+
+---
+
+## 🏦 Accounts APIs
+
+| Method | Endpoint                   | Description                           |
+| ------ | -------------------------- | ------------------------------------- |
+| GET    | `/api/v1/account/balance`  | Get current balance & user details    |
+| POST   | `/api/v1/account/transfer` | Transfer money to another user (ACID) |
+| GET    | `/api/v1/account/history`  | Fetch last 10 transactions            |
+
+---
+
+## 💸 Payments (Razorpay) APIs
+
+| Method | Endpoint                       | Description                     |
+| ------ | ------------------------------ | ------------------------------- |
+| POST   | `/api/v1/payment/create-order` | Initialize Razorpay order       |
+| POST   | `/api/v1/payment/verify`       | Verify payment & credit balance |
+
+---
+
+## ❤️ Health Check
 
 ```http
-  GET api/v1/healthcheck
+GET /api/v1/healthcheck
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**.  |
+Used to verify server availability.
 
-#### Signup route
+---
+
+## 🔐 Authentication Details
+
+* JWT token generated on **signup/login**
+* Token must be sent via header:
 
 ```http
-  POST /api/v1/users/signup
+Authorization: Bearer <token>
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username`      | `string` | **Required** |
-| `email`      | `string` | **Required** |
-| `password`      | `string` | **Required** |
-| `fullname`      | `string` | **Required** |
+---
 
-### Login route
+## 📌 API Reference (Detailed)
+
+### Signup
+
+```http
+POST /api/v1/users/signup
+```
+
+| Field    | Type   | Required |
+| -------- | ------ | -------- |
+| username | string | ✅        |
+| email    | string | ✅        |
+| password | string | ✅        |
+| fullname | string | ✅        |
+
+---
+
+### Login
 
 ```http
 POST /api/v1/users/login
 ```
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username`      | `string` | **Required** |
-| `password`      | `string` | **Required** |
 
-#### Transfer Money
+| Field    | Type   | Required |
+| -------- | ------ | -------- |
+| username | string | ✅        |
+| password | string | ✅        |
+
+---
+
+### Transfer Money
 
 ```http
-  POST /api/v1/account/transfer
+POST /api/v1/account/transfer
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `amount`      | `number` | **Required** (The amount you want to send) |
-| `to`      | `string` | **Required** ( useID you want to send the money to.) |
-| `Authorization`      | `Bearer token` | **Required** (on signup/login jwt token are generated and sent through headers) |
+| Field         | Type         | Description     |
+| ------------- | ------------ | --------------- |
+| amount        | number       | Amount to send  |
+| to            | string       | Receiver userId |
+| Authorization | Bearer token | JWT token       |
 
+---
 
-#### To update user details
+### Update User Details
 
 ```http
-    POST /api/v1/users/updateDetails
+POST /api/v1/users/updateDetails
 ```
 
-| Parameter | Type     | Description (Available after Authorization)                      |
-| :-------- | :------- | :-------------------------------- |
-| `password`      | `string` | Required if you want to update this |
-| `fullname`      | `string` | Required if you want  to update this |
+| Field    | Type   | Notes    |
+| -------- | ------ | -------- |
+| password | string | Optional |
+| fullname | string | Optional |
 
-### To get the Balance (Only for logged in user)
+---
+
+### Get Balance
 
 ```http
- GET /api/v1/account/balance
+GET /api/v1/account/balance
 ```
-### To check the available users
+
+Returns logged-in user's balance.
+
+---
+
+### Search Users
 
 ```http
- GET /api/v1/users/bulk
- ```
+GET /api/v1/users/bulk
+```
 
+Supports debounced search using query params.
 
- 
+---
 
+## ⚙️ Installation Guide
 
-## Installation
-
-Install my-project with npm
-
-For server side
+### Server Setup
 
 ```bash
-  npm install 
-  connect you Mongo_URI
-  npm run start/npm run dev(for nodemon)
+npm install
+# configure MONGO_URI, Redis_URL in .env
+npm run dev
 ```
- For client side
+
+### Client Setup
+
 ```bash
- npm install
- npm run dev   
- ```
-## Tech Stack
+npm install
+npm run dev
+```
 
-**Client:** React+Vite,TailwindCSS
+---
 
-**Server:** Node, Express
+## 📦 Libraries Used
 
-**Database:** MongoDB
+### Server Side
 
+* Zod – input validation
+* JWT – authentication
+* Bcrypt – password hashing
+* Mongoose – MongoDB ORM
 
-## Appendix
+### Client Side
 
-Server Side:
-Zod for validation,  jwt token for authentication,   bcrypt for password hashing, moongose as ORM are used.
+* React Router DOM
+* Axios
+* Dotenv
 
-Client Side:
-react-router-dom,axios,dotenv are some of the packages used
+---
 
+## 📘 Notes
+
+* Razorpay runs in **test mode**
+* MongoDB transactions ensure **zero money loss**
+* Designed with scalability and production-readiness in mind
+
+---
+
+🚀 **PayCore** – A clean, secure, production-grade fintech system.
