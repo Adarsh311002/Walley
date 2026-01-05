@@ -7,7 +7,7 @@ const Navbar = () => {
     <header className="px-4 lg:px-6 h-14 flex items-center bg-white/10 backdrop-blur-md">
       <Link href="/" className="flex items-center justify-center">
         <Wallet className="h-6 w-6 text-white" />
-        <span className="ml-2 text-2xl font-bold text-white">Walley</span>
+        <span className="ml-2 text-2xl font-bold text-white">PayCore</span>
       </Link>
       <nav className="ml-auto flex items-center gap-4 sm:gap-6">
         <Link
