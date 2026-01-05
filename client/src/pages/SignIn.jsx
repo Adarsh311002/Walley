@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import api from "../api.js";
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +38,8 @@ const SignIn = () => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5001/api/v1/users/login",
+      const response = await api.post(
+        "/api/v1/users/login",
         {
           username: formData.username,
           password: formData.password,

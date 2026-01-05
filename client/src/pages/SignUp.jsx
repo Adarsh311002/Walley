@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import api from "../api.js";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -39,8 +40,8 @@ const SignUp = () => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5001/api/v1/users/signup",
+      const response = await api.post(
+        "/api/v1/users/signup",
         formData
       );
 

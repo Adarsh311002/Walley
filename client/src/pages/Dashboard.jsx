@@ -33,6 +33,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import api from "../api.js";
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -65,15 +66,15 @@ export default function Dashboard() {
 
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        const balRes = await axios.get(
-          "http://localhost:5001/api/v1/account/balance",
+        const balRes = await api.get(
+          "/api/v1/account/balance",
           config
         );
         setBalance(balRes.data.balance);
         if (balRes.data.name) setUserName(balRes.data.name);
 
-        const historyRes = await axios.get(
-          "http://localhost:5001/api/v1/account/history",
+        const historyRes = await api.get(
+          "/api/v1/account/history",
           config
         );
         setTransactions(historyRes.data.transactions);
@@ -91,8 +92,8 @@ export default function Dashboard() {
       if (searchTerm) {
         try {
           const token = localStorage.getItem("token");
-          const response = await axios.get(
-            `http://localhost:5001/api/v1/users/bulk?filter=${searchTerm}`,
+          const response = await api.get(
+            `/api/v1/users/bulk?filter=${searchTerm}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           setUsers(response.data.data.users || []);
@@ -122,8 +123,8 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const orderRes = await axios.post(
-        "http://localhost:5001/api/v1/payment/create-order",
+      const orderRes = await api.post(
+        "/api/v1/payment/create-order",
         { amount: Number(addAmount) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -140,8 +141,8 @@ export default function Dashboard() {
        
         handler: async function (response) {
           try {
-            await axios.post(
-              "http://localhost:5001/api/v1/payment/verify",
+            await api.post(
+              "/api/v1/payment/verify",
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -156,8 +157,8 @@ export default function Dashboard() {
             setAddAmount("");
             toast.success("Payment Successful!");
 
-            const historyRes = await axios.get(
-              "http://localhost:5001/api/v1/account/history",
+            const historyRes = await api.get(
+              "/api/v1/account/history",
               { headers: { Authorization: `Bearer ${token}` } }
             );
             setTransactions(historyRes.data.transactions);
@@ -182,8 +183,8 @@ export default function Dashboard() {
     setTransferLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5001/api/v1/account/transfer",
+      await api.post(
+        "/api/v1/account/transfer",
         { to: selectedUser._id, amount: Number(amount) },
         { headers: {
            Authorization: `Bearer ${token}`,
@@ -197,8 +198,8 @@ export default function Dashboard() {
       setBalance((prev) => prev - Number(amount));
       toast.success("Transfer Successful");
 
-      const historyRes = await axios.get(
-        "http://localhost:5001/api/v1/account/history",
+      const historyRes = await api.get(
+        "/api/v1/account/history",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTransactions(historyRes.data.transactions);
