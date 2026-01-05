@@ -1,10 +1,10 @@
-# 💳 PayCore
+# 💳 PayCore (Razorpay API, ShadCN, React, Node.js, MongoDB)
 
 PayCore is a modern, full-stack fintech application that allows users to send and receive money instantly. It is designed with a minimalist **Swiss Design** philosophy, real-time payment integration, and bank-grade security practices.
 
 ---
 
-## ✨ Featuresa
+## ✨ Features
 
 * **Add Funds (Razorpay)**: Securely add funds using Razorpay (Cards, NetBanking, UPI – test mode)
 * **P2P Transfers**: Instantly send money to other users using name or username
