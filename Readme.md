@@ -24,6 +24,11 @@ PayCore is a modern, full-stack fintech application that allows users to send an
 
 ---
 
+## HLD
+
+<img width="3874" height="2039" alt="Paycore" src="https://github.com/user-attachments/assets/4c0492ea-528e-4a82-9902-52ca9a1b794a" />
+
+---
 ## 🛠️ Tech Stack
 
 | Layer        | Technologies                                              |
